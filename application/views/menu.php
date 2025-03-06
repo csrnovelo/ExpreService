@@ -26,35 +26,35 @@
 
     <div class="collapse navbar-collapse" id="myNavbar" style="padding-top: 15px; padding-bottom: 15px;">
         <ul class="nav navbar-nav navbar-right">
-            <li><a href="#inicio" class='nav-contenido'>Lo más vendido</a></li>
-            <li><a href="#servicios" class='nav-contenido'>Categorías</a></li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle nav-contenido" data-toggle="dropdown">
-                    Nosotros <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" style="background-color: #fff; padding: 15px; width: 300px;">
-                    <li>
-                        <h4 style="color: #5271ff; margin-bottom: 10px;">ExpreService</h4>
-                        <p style="color: #333; font-size: 14px; line-height: 1.5;">
-                            Somos una plataforma líder en la conexión de servicios profesionales 
-                            con clientes.
-                        </p>
-                        <hr>
-                        <a href="#nosotros" class="btn btn-sm" style="background-color: #5271ff; color: white;">
-                            Conoce más
+            <?php foreach($secciones as $seccion): ?>
+                <?php if(trim($seccion->clave) === 'NTS'): ?>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle nav-contenido" data-toggle="dropdown">
+                            <?php echo LimpiaCadena($seccion->nombre); ?> <span class="caret"></span>
                         </a>
+                        <ul class="dropdown-menu" style="background-color: #fff; padding: 15px; width: 300px;">
+                            <li>
+                                <h4 style="color: #5271ff; margin-bottom: 10px;">ExpreService</h4>
+                                <p style="color: #333; font-size: 14px; line-height: 1.5;">
+                                    Somos una plataforma líder en la conexión de servicios profesionales 
+                                    con clientes.
+                                </p>
+                                <hr>
+                                <a href="#nosotros" class="btn btn-sm" style="background-color: #5271ff; color: white;">
+                                    Conoce más
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                </ul>
-            </li>
-            <li><a href="#" data-toggle="modal" data-target="#loginModal" class='nav-contenido'>Iniciar sesión</a></li>
-        </ul>
-    </div>
-
-
-    <div class="collapse navbar-collapse" id="myNavbar" style="padding-top: 15px; padding-bottom: 15px;">
-        <ul class="nav navbar-nav navbar-right">
-            <?php foreach($secciones as $seccion): ?>                        
-                <li><a href="#<?php echo $seccion->clave; ?>" class='nav-contenido'><?php echo LimpiaCadena($seccion->nombre); ?></a></li>
+                <?php elseif(trim($seccion->clave) === 'INS'): ?>
+                    <li><a href="#" data-toggle="modal" data-target="#loginModal" class='nav-contenido'>
+                        <?php echo LimpiaCadena($seccion->nombre); ?>
+                    </a></li>
+                <?php else: ?>
+                    <li><a href="#<?php echo $seccion->clave; ?>" class='nav-contenido'>
+                        <?php echo LimpiaCadena($seccion->nombre); ?>
+                    </a></li>
+                <?php endif; ?>
             <?php endforeach; ?>
         </ul>
     </div>
