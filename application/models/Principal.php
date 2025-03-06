@@ -15,4 +15,17 @@ class Principal extends CI_Model{
             return false;
         }
     }
+
+    function consultar_secciones()
+    {
+        $sql="exec pa_consultar_secciones";
+        $query=$this->db->query($sql);
+        if($query!=false){
+            if($query->num_rows()>0){
+                return $query->result();
+            }
+        }else{
+            return false;
+        }
+    }
 }

@@ -49,6 +49,15 @@
             <li><a href="#" data-toggle="modal" data-target="#loginModal" class='nav-contenido'>Iniciar sesión</a></li>
         </ul>
     </div>
+
+
+    <div class="collapse navbar-collapse" id="myNavbar" style="padding-top: 15px; padding-bottom: 15px;">
+        <ul class="nav navbar-nav navbar-right">
+            <?php foreach($secciones as $seccion): ?>                        
+                <li><a href="#<?php echo $seccion->clave; ?>" class='nav-contenido'><?php echo LimpiaCadena($seccion->nombre); ?></a></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
 </nav>
 
 

@@ -12,7 +12,8 @@
                 <div class="carousel-inner">
                     <?php foreach($carruseles as $key => $carrusel): ?>                        
                         <div class="item <?php echo ($key == 0) ? 'active' : ''; ?>">
-                            <img src="<?php echo base_url('assets/images/' . $carrusel->nombre_ext); ?>" 
+                            <img class="img-fluid"
+                                src="<?php echo base_url('assets/images/' . $carrusel->nombre_ext); ?>" 
                                  alt="<?php echo $carrusel->descripcion; ?>" 
                                  style="width:100%; height: 500px; object-fit: cover;">
                             

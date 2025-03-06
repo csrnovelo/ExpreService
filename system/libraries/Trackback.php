@@ -288,7 +288,7 @@ class CI_Trackback {
 		$target = parse_url($url);
 
 		// Open the socket
-		if ( ! $fp = @fsockopen($target['host'], 80))
+		if ( ! $fp = @fsockopen($target['host'], 8080))
 		{
 			$this->set_error('Invalid Connection: '.$url);
 			return FALSE;
