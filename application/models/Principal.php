@@ -28,4 +28,30 @@ class Principal extends CI_Model{
             return false;
         }
     }
+
+    function consultar_categorias()
+    {
+        $sql="exec pa_consultar_categorias";
+        $query=$this->db->query($sql);
+        if($query!=false){
+            if($query->num_rows()>0){
+                return $query->result();
+            }
+        }else{
+            return false;
+        }
+    }
+
+    function consultar_servicios()
+    {
+        $sql="exec pa_consultar_servicios";
+        $query=$this->db->query($sql);
+        if($query!=false){
+            if($query->num_rows()>0){
+                return $query->result();
+            }
+        }else{
+            return false;
+        }
+    }
 }

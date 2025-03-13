@@ -27,12 +27,14 @@ class Welcome extends CI_Controller {
 	{
 		$datos["carruseles"]=$this->mP->consultar_carrusel();
 		$datos["secciones"]=$this->mP->consultar_secciones();
+		$datos["categorias"]=$this->mP->consultar_categorias();
+		$datos["servicios"]=$this->mP->consultar_servicios();
 		// $datos["carrera"]="LATI";
 		// $datos["Mensaje"]="Esto es un mensaje de prueba";
 		$this->load->view('genericos/header');
 		$this->load->view('menu', $datos);
 		$this->load->view('carrusel', $datos);
-		$this->load->view('listado_servicios');
+		$this->load->view('listado_servicios', $datos);
 		$this->load->view('genericos/footer');
 	}
 

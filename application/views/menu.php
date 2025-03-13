@@ -46,10 +46,25 @@
                             </li>
                         </ul>
                     </li>
-                <?php elseif(trim($seccion->clave) === 'INS'): ?>
+                    <?php elseif(trim($seccion->clave) === 'INS'): ?>
                     <li><a href="#" data-toggle="modal" data-target="#loginModal" class='nav-contenido'>
                         <?php echo LimpiaCadena($seccion->nombre); ?>
-                    </a></li>
+                    </a></li>                
+                    <?php elseif(trim($seccion->clave) === 'CAT'): ?>
+                    <li>
+                        <a href="#" class="dropdown-toggle nav-contenido" data-toggle="dropdown">
+                            <?php echo LimpiaCadena($seccion->nombre); ?> <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" style="background-color: #fff; padding: 15px; width: 300px;">
+                            <?php foreach($categorias as $categoria): ?>
+                                <li>
+                                    <a href="<?php echo LimpiaCadena($categoria->descripcion); ?>" class="nav-contenido">
+                                        <?php echo LimpiaCadena($categoria->descripcion); ?>
+                                    </a>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </li>
                 <?php else: ?>
                     <li><a href="#<?php echo $seccion->clave; ?>" class='nav-contenido'>
                         <?php echo LimpiaCadena($seccion->nombre); ?>
