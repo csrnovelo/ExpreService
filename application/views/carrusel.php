@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" style="margin-top: 50px;">
     <div class="row">
         <div class="col-sm-12">
             <div id="serviceCarousel" class="carousel slide" data-ride="carousel">
@@ -14,27 +14,8 @@
                         <div class="item <?php echo ($key == 0) ? 'active' : ''; ?>">
                             <img class="img-fluid"
                                 src="<?php echo base_url('assets/images/' . $carrusel->nombre_ext); ?>" 
-                                 alt="<?php echo $carrusel->descripcion; ?>" 
-                                 style="width:100%; height: 500px; object-fit: cover;">
-                            
-                            <?php if(trim($carrusel->clave) === 'BUSQ'): ?>
-                                <div class="carousel-caption" style="top: 50%; transform: translateY(-50%); bottom: auto;">
-                                    <h2>¿Qué servicio estás buscando hoy?</h2>
-                                    <p style="color: #fff; font-size: 18px;">Encuentra el servicio perfecto para tus necesidades</p>
-                                    <div class="row">
-                                        <div class="col-sm-8 col-sm-offset-2">
-                                            <div class="input-group" style="margin-top: 30px;">
-                                                <input type="text" class="form-control input-lg" placeholder="Busca un servicio...">
-                                                <span class="input-group-btn">
-                                                    <button class="btn btn-lg" type="button" style="background-color: #5271ff; color: white;">
-                                                        <i class="glyphicon glyphicon-search"></i> Buscar
-                                                    </button>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endif; ?>
+                                alt="<?php echo $carrusel->descripcion; ?>" 
+                                style="width:100%; height: auto;">
                         </div>
                     <?php endforeach; ?>
                 </div>
@@ -54,8 +35,7 @@
 <style>
     .carousel-inner > .item > img {
         width: 100%;
-        height: 500px;
-        object-fit: cover;
+        height: auto;
     }
 
     .carousel-caption {
@@ -98,5 +78,23 @@
         font-size: 18px;
         margin-bottom: 25px;
         text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    }
+
+    @media (max-width: 768px) {
+        .carousel-caption {
+            padding: 20px;
+        }
+        .carousel-caption h2 {
+            font-size: 24px;
+        }
+        .carousel-caption p {
+            font-size: 14px;
+        }
+        .input-group .form-control {
+            height: 40px;
+        }
+        .input-group .btn {
+            height: 40px;
+        }
     }
 </style>
