@@ -72,26 +72,28 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $active_group = 'default';
 $query_builder = TRUE;
+// EDITAR ESTO EN PHP.INI Y CAMBIAR DBDRIVER
+// extension=php_sqlsrv.dll
+// extension=php_pdo_sqlsrv.dll
 
 $db['default'] = array(
-	'dsn'	=> '',
-	'hostname' => 'Driver={SQL Server};Server=DESKTOP-NQ6735F\SQLEXPRESS;Database=DBServices;',
-	'username' => 'sa',
-	'password' => '12345678',
-	'database' => 'DBServices',
-	// 'dbdriver' => 'mysqli',
-	'dbdriver' => 'odbc',
-	'dbprefix' => '',
-	'pconnect' => FALSE,
-	'db_debug' => (ENVIRONMENT !== 'production'),
-	'cache_on' => FALSE,
-	'cachedir' => '',
-	'char_set' => 'utf8',
-	'dbcollat' => 'utf8_general_ci',
-	'swap_pre' => '',
-	'encrypt' => FALSE,
-	'compress' => FALSE,
-	'stricton' => FALSE,
-	'failover' => array(),
-	'save_queries' => TRUE
+    'dsn'      => 'Driver={SQL Server};Server=DESKTOP-NQ6735F\SQLEXPRESS;Database=DBServices;',
+    'hostname' => '',
+    'username' => 'sa',
+    'password' => '12345678',
+    'database' => 'DBServices',
+    'dbdriver' => 'odbc',
+    'dbprefix' => '',
+    'pconnect' => FALSE,
+    'db_debug' => (ENVIRONMENT !== 'production'),
+    'cache_on' => FALSE,
+    'cachedir' => '',
+    'char_set' => 'utf8',
+    'dbcollat' => 'utf8_general_ci',
+    'swap_pre' => '',
+    'encrypt'  => FALSE,
+    'compress' => FALSE,
+    'stricton' => FALSE,
+    'failover' => array(),
+    'save_queries' => TRUE
 );
