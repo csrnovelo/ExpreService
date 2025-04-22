@@ -16,6 +16,18 @@ class Principal extends CI_Model
             return FALSE;
         }
     }
+    // public function validar_usuario($correo, $password) {
+    //     $sql = "EXEC pa_validar_usuario ?, ?";
+    //     $params = array($correo, $password);
+        
+    //     $query = $this->db->query($sql, $params);
+        
+    //     if ($query) {
+    //         return $query->result();
+    //     } else {
+    //         return FALSE;
+    //     }
+    // }
     
     function consultar_carrusel()
     {

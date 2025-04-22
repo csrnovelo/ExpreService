@@ -72,6 +72,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $active_group = 'default';
 $query_builder = TRUE;
+// EDITAR ESTO EN PHP.INI Y CAMBIAR DBDRIVER
+// extension=php_sqlsrv.dll
+// extension=php_pdo_sqlsrv.dll
 
 $db['default'] = array(
     'dsn'      => 'Driver={SQL Server};Server=DESKTOP-NQ6735F\SQLEXPRESS;Database=DBServices;',
