@@ -16,18 +16,6 @@ class Principal extends CI_Model
             return FALSE;
         }
     }
-    // public function validar_usuario($correo, $password) {
-    //     $sql = "EXEC pa_validar_usuario ?, ?";
-    //     $params = array($correo, $password);
-        
-    //     $query = $this->db->query($sql, $params);
-        
-    //     if ($query) {
-    //         return $query->result();
-    //     } else {
-    //         return FALSE;
-    //     }
-    // }
     
     function consultar_carrusel()
     {
@@ -82,6 +70,41 @@ class Principal extends CI_Model
         return $this->db->query($sql);
     }
 
+    public function actualizar_direccion($id_usuario, $direccion) {
+        $id_usuario = (int) $id_usuario;
+        $id_direccion = isset($direccion['id']) ? (int) $direccion['id'] : null;
+    
+        if ($id_direccion) {
+            $sql = "UPDATE usuarios_direcciones SET
+                        titulo = '{$direccion['titulo']}',
+                        descripcion = '{$direccion['descripcion']}',
+                        colonia = '{$direccion['colonia']}',
+                        calle = '{$direccion['calle']}',
+                        codigo_postal = '{$direccion['codigoPostal']}',
+                        num_exterior = '{$direccion['numeroExt']}',
+                        num_interior = '{$direccion['numeroInt']}'
+                    WHERE id = $id_direccion AND id_usuario = $id_usuario";
+        } else {
+            $sql = "INSERT INTO usuarios_direcciones (
+                        id_usuario, titulo, descripcion, colonia, calle,
+                        codigo_postal, num_exterior, num_interior, estatus, fecha_creacion
+                    ) VALUES (
+                        $id_usuario,
+                        '{$direccion['titulo']}',
+                        '{$direccion['descripcion']}',
+                        '{$direccion['colonia']}',
+                        '{$direccion['calle']}',
+                        '{$direccion['codigoPostal']}',
+                        '{$direccion['numeroExt']}',
+                        '{$direccion['numeroInt']}',
+                        1,
+                        GETDATE()
+                    )";
+        }
+    
+        return $this->db->query($sql);
+    }
+    
     public function obtener_direcciones($id_usuario) {
         $sql = "SELECT 
                     id,
@@ -210,8 +233,7 @@ class Principal extends CI_Model
         ];
     }
 
-    public function servicio_categoria($id)
-    {
+    public function servicio_categoria($id){
         $nombre_servicio = "SELECT 
                                 sc.Id, 
                                 sc.descripcion, 
@@ -319,4 +341,112 @@ class Principal extends CI_Model
         $this->db->query("SET ANSI_NULLS ON");
 
     }
+
+    public function obtener_mis_servicios($id_usuario) {
+        $sql = "SELECT 
+                    s.Id,
+                    s.id_usuario,
+                    s.id_categoria,
+                    sc.descripcion AS categoria,
+                    s.titulo,
+                    s.descripcion,
+                    s.precio_hora,
+                    s.img
+                FROM servicios s 
+                INNER JOIN servicios_categorias sc ON s.id_categoria = sc.Id
+                WHERE s.id_usuario = ? 
+                AND s.estatus = 1";
+        
+        $query = $this->db->query($sql, array($id_usuario));
+        return $query->result_array();
+    }
+
+    public function obtener_horario($id_servicio) {
+        $sql = "SELECT 
+                    h.Id,
+                    h.id_servicio,
+                    h.dia,
+                    h.hora_inicio,
+                    h.hora_fin
+                FROM servicios_horarios h
+                WHERE h.id_servicio = ? 
+                AND h.estatus = 1";
+        
+        $query = $this->db->query($sql, array($id_servicio));
+        return $query->result_array();
+    }
+
+    public function contratar_servicio($data){
+        $data['hora_inicio'] = str_pad($data['hora_inicio'], 2, '0', STR_PAD_LEFT) . ':00:00';
+        $data['hora_fin']    = str_pad($data['hora_fin'], 2, '0', STR_PAD_LEFT) . ':00:00';
+
+        $sql = "INSERT INTO contrataciones (
+                    id_servicio, id_usuario, id_direccion, monto, estatus, pagado, fecha_hora, fecha_creacion, hora_inicio, hora_fin
+                ) VALUES (
+                    {$data['id_servicio']},
+                    {$data['id_usuario']},
+                    {$data['id_direccion']},
+                    {$data['monto']},
+                    1,
+                    '{$data['pagado']}',
+                    '{$data['fecha_hora']}',
+                    '{$data['fecha_creacion']}',
+                    '{$data['hora_inicio']}',
+                    '{$data['hora_fin']}'
+                )";
+
+        return $this->db->query($sql);
+    }
+
+    public function obtener_contrataciones_pagadas($id) {
+        $sql = "SELECT c.monto, c.Id, c.hora_fin, c.hora_inicio, c.fecha_hora, 
+                    d.titulo as lugar, s.titulo as servicio 
+                FROM contrataciones c
+                INNER JOIN usuarios_direcciones d ON d.Id = c.id_direccion
+                INNER JOIN servicios s ON s.Id = c.id_servicio
+                WHERE c.pagado = 'S' 
+                AND c.id_usuario = ? 
+                AND CONVERT(date, c.fecha_hora) >= CONVERT(date, GETDATE())";
+        
+        $query = $this->db->query($sql, array($id));
+        return $query->result_array();
+    }
+
+    public function obtener_contrataciones_por_pagar($id){
+        $sql = "SELECT c.monto, c.Id, c.hora_fin, c.hora_inicio, c.fecha_hora, d.titulo as lugar, s.titulo as servicio FROM contrataciones c
+                INNER JOIN usuarios_direcciones d ON d.Id = c.id_direccion
+                INNER JOIN servicios s ON s.Id = c.id_servicio
+                WHERE c.pagado = 'N' AND c.id_usuario = ?";
+
+        $query = $this->db->query($sql, array($id));
+        return $query->result_array();
+    }
+
+    public function obtener_contrataciones_finalizadas($id){
+        $sql = "SELECT c.monto, c.Id, c.hora_fin, c.hora_inicio, c.fecha_hora, d.titulo as lugar, s.titulo as servicio FROM contrataciones c
+                INNER JOIN usuarios_direcciones d ON d.Id = c.id_direccion
+                INNER JOIN servicios s ON s.Id = c.id_servicio
+                WHERE c.pagado = 'S' AND c.id_usuario = ?
+                AND CONVERT(date, c.fecha_hora) <= CONVERT(date, GETDATE())";
+
+        $query = $this->db->query($sql, array($id));
+        return $query->result_array();
+    }
+
+    public function pagar_servicios($id){
+        $sql = "UPDATE contrataciones SET pagado = 'S' WHERE Id = ?";
+        return $this->db->query($sql, array($id));
+    }
+
+    public function obtener_contrataciones($id_contratacion){
+        $sql = "SELECT c.Id, s.titulo, u.nombre, c.fecha_hora, c.monto, c.hora_inicio, c.hora_fin from contrataciones c
+                inner join usuarios u on u.Id = c.id_usuario
+                inner join servicios s on s.Id = c.id_servicio
+                inner join usuarios_direcciones ud on ud.Id = c.id_direccion
+                where c.Id = ?";
+
+        $query = $this->db->query($sql, array($id_contratacion));
+        return $query->result_array();
+    }
+
 }

@@ -57,6 +57,7 @@
                                     <a href="#" class="dropdown-toggle nav-contenido" data-toggle="dropdown" style="font-size: 17px;">
                                         Bienvenido, <?php echo $this->session->userdata('nombre'); ?> <span class="caret"></span>
                                         <input type="text" value="<?php echo $this->session->userdata('id'); ?>" id="userId" hidden>
+                                        <input type="text" id="correo_usuario" value="<?php  echo $this->session->userdata('correo'); ?>" hidden>
                                     </a>
                                     <ul class="dropdown-menu user-menu" style="background-color: #fff; padding: 10px; width: 200px;">
                                         <li>
@@ -65,12 +66,12 @@
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#mis-servicios" class="nav-contenido">
+                                            <a href="<?php echo base_url('welcome/mis_servicios/' . $this->session->userdata('id')); ?>" class="nav-contenido">
                                                 <i class="glyphicon glyphicon-briefcase"></i> Mis Servicios
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#mis-contrataciones" class="nav-contenido">
+                                            <a href="<?php echo base_url('welcome/contrataciones/' . $this->session->userdata('id')); ?>" class="nav-contenido">
                                                 <i class="glyphicon glyphicon-list-alt"></i> Mis Contrataciones
                                             </a>
                                         </li>
