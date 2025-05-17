@@ -1,52 +1,50 @@
-<div class="container py-5">
+<div class="container py-5" style="margin-top: 50px;">
     <div class="row mb-4">
-        <div class="col-lg-3"></div>
-        <div class="col-lg-6 mx-auto">
-            <div class="card shadow rounded-4">
-                <div class="card-body">
-                    <h2 class="card-title mb-4">Perfil del Usuario</h2>
-                    <p><strong>Nombre:</strong> <?= $usuario['nombre'] ?></p>
-                    <p><strong>Apellido paterno:</strong> <?= $usuario['apellido_paterno'] ?></p>
-                    <p><strong>Apellido materno:</strong> <?= $usuario['apellido_materno'] ?></p>
-                    <p><strong>Correo:</strong> <?= $usuario['correo'] ?></p>
-                    <p><strong>Teléfono:</strong> <?= $usuario['telefono'] ?></p>
-                </div>
-            </div>
+        <div class="col-lg-12 mx-auto text-center">
+            <h1 class="display-4">Mis Servicios</h1>
+            <p class="lead">Aquí puedes gestionar tus servicios de envío.</p>
         </div>
-        <div class="col-lg-3"></div>
     </div>
 
-    <button class="btn btn-primary mt-3" data-bs-toggle="modal" onclick="abrirModal()" data-bs-target="#modalDireccion">Agregar Dirección</button>
+    <button class="btn btn-primary mt-3" data-bs-toggle="modal" onclick="abrirModal()" data-bs-target="#modalDireccion">Agregar Servicio</button>
 
     <div class="row mt-4">
         <div class="col-lg-12 mx-auto">
             <div class="card shadow rounded-4">
                 <div class="card-body">
-                    <h3 class="card-title mb-4">Mis Direcciones</h3>
+                    <h3 class="card-title mb-4">Mis Servicios</h3>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead class="table-primary">
                                 <tr>
                                     <th>Título</th>
-                                    <th>Dirección</th>
-                                    <th>Colonia</th>
-                                    <th>CP</th>
+                                    <th>Descripción</th>
+                                    <th>Precio por hora</th>
+                                    <th>Categoría</th>
+                                    <th>Imagen</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="tablaDirecciones">
-                                <?php if(isset($direcciones) && !empty($direcciones)): ?>
-                                    <?php foreach($direcciones as $direccion): ?>
+                            <tbody id="tablaServicios">
+                                <?php if (isset($mis_servicios) && !empty($mis_servicios)) : ?>
+                                    <?php foreach ($mis_servicios as $servicio): ?>
                                         <tr>
-                                            <td><?= $direccion['titulo'] ?></td>
-                                            <td><?= $direccion['calle'] . ' #' . $direccion['num_exterior'] ?></td>
-                                            <td><?= $direccion['colonia'] ?></td>
-                                            <td><?= $direccion['codigo_postal'] ?></td>
+                                            <td><?= $servicio['titulo'] ?></td>
+                                            <td><?= $servicio['descripcion'] ?></td>
+                                            <td>$<?= $servicio['precio_hora'] ?></td>
+                                            <td><?= $servicio['categoria'] ?></td>
                                             <td>
-                                                <button class="btn btn-sm btn-primary" onclick="editarDireccion(<?= $direccion['id'] ?>)">
+                                                <?php if (!empty($servicio['img'])): ?>
+                                                    <img src="<?= base_url('assets/images/' . $servicio['img']) ?>" alt="Imagen del servicio" width="100">
+                                                <?php else: ?>
+                                                    <span>Sin imagen</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" onclick="editarServicio(<?= $servicio['Id'] ?>)">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </button>
-                                                <button class="btn btn-sm btn-danger" onclick="eliminarDireccion(<?= $direccion['id'] ?>)">
+                                                <button class="btn btn-sm btn-danger" onclick="eliminarServicio(<?= $servicio['Id'] ?>)">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </td>
@@ -54,7 +52,7 @@
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="5" class="text-center">No hay direcciones registradas</td>
+                                        <td colspan="6" class="text-center">No tienes servicios registrados</td>
                                     </tr>
                                 <?php endif; ?>
                             </tbody>
@@ -64,6 +62,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <!-- Modal -->
@@ -161,14 +160,14 @@
                dataType: 'json',
                success: function(response) {
                    if (response.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Guardado',
-                                text: 'Dirección guardada exitosamente'
-                            }).then(() => {
-                                location.reload();
-                                cerrarModal();
-                            });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Guardado',
+                            text: 'Dirección guardada exitosamente'
+                        }).then(() => {
+                            location.reload();
+                            cerrarModal();
+                        });
                    } else {
                        alert('Error al guardar la dirección: ' + response.message);
                    }
