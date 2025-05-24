@@ -20,10 +20,12 @@
                                 <i class="fas fa-user me-1"></i>
                                 <?php echo LimpiaCadena($servicio->nombre_usuario . ' ' . $servicio->apellido_paterno); ?>
                             </p>
-                            <p class="card-text fw-bold text-primary mb-2">
+                            <h4 class="card-text fw-bold text-primary mb-2">
                                 $<?php echo number_format($servicio->precio_hora, 2); ?> / hora
-                            </p>
+                            </h4>
                             <p class="card-text mb-2"><?php echo "Calificación: " . $servicio->promedio_calificacion; ?></p>
+                            <p class="text-center text-info mt-2" style="font-style: italic;">Haz clic para ver más</p>
+
                         </div>
                     </div>
                 </div>
