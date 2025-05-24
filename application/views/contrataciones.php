@@ -62,6 +62,9 @@
                                 <button class="btn btn-sm btn-danger" onclick="eliminarServicio(<?= $contraPNO['Id'] ?>)">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                                <button class="btn btn-sm btn-success" onclick="pagarServicio(<?= $contraPNO['Id'] ?>)">
+                                    <i class="bi bi-credit-card"></i>
+                                </button>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -236,7 +239,39 @@
 
 </div>
 
+<!-- modal direcciones -->
+<div class="modal fade" id="modalDireccion" tabindex="-1" aria-labelledby="modalDireccionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalDireccionLabel">Agregar Nueva Dirección</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formDireccion">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label for="tipoDireccion" class="form-label">Selecciona una direccion: </label>
+                                <select class="form-select" id="direccionUsuario" name="direccionUsuario" required>
+                                    <option value="" selected disabled>Selecciona una dirección</option>
+                                </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cerrarModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="id_btn_guardar" onclick="guardarDireccion()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
+    let datosContratacion = {};
+    let listaDirecciones = [];
+
     function pagarTodo() {
         let ids = [];
         const correo_usuario = document.getElementById('correo_usuario').value;
@@ -297,5 +332,167 @@
             }
         });
     }
+
+    function pagarServicio(id_contratacion){
+        const correo_usuario = document.getElementById('correo_usuario').value;
+        const idUsuario = parseInt(document.getElementById('userId').value, 10);
+
+        Swal.fire({
+            title: '¿Confirmas el pago del servicio?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, pagar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '<?= base_url("welcome/actualizar_contrato") ?>',
+                    type: 'POST',
+                    data: { 
+                        id_contratacion: id_contratacion, 
+                        correo_usuario: correo_usuario, 
+                        idUsuario: idUsuario 
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pago realizado con éxito',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Hubo un error al procesar el pago.'
+                        });
+                    }
+                });
+            }
+        });
+
+    }
+
+    function eliminarServicio(id_contratacion){
+        Swal.fire({
+            title: '¿Confirmas la cancelación del servicio?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, cancelar',
+            cancelButtonText: 'Salir'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '<?= base_url("welcome/cancelar_contratacion") ?>',
+                    type: 'POST',
+                    data: { 
+                        id_contratacion: id_contratacion 
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pago realizado con éxito',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Hubo un error al procesar el pago.'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    function editarServicio(id_contratacion) {
+        const usuarioId = document.getElementById('userId');
+
+        $.ajax({
+            url: '<?= base_url("welcome/obtenerContratacionDirecciones") ?>',
+            type: 'GET',
+            data: { 
+                id_contratacion: id_contratacion,
+                id_usuario: usuarioId.value
+            },
+            dataType: 'json',
+            success: function (response) {
+                console.log(response)
+                if (response) {
+                    datosContratacion = response.contratacion[0];
+                    listaDirecciones = response.direcciones;
+
+                    const $select = $('#direccionUsuario');
+                    $select.empty();
+                    $select.append('<option value="" disabled selected>Selecciona una dirección</option>');
+
+                    listaDirecciones.forEach(dir => {
+                        let texto = `${dir.titulo} - ${dir.calle} ${dir.num_exterior}, ${dir.colonia}`;
+                        $select.append(`<option value="${dir.id}">${texto}</option>`);
+                    });
+
+                    $select.val(datosContratacion.id_direccion);
+
+                    $('#modalDireccion').modal('show');
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Atención',
+                        text: 'No se pudo cargar la información de la contratación.'
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un error al obtener las direcciones.'
+                });
+            }
+        });
+    }
+
+    function guardarDireccion() {
+        const idDireccionSeleccionada = $('#direccionUsuario').val();
+        console.log('ID seleccionada:', idDireccionSeleccionada);
+        console.log('ID de la contratación:', datosContratacion.Id);
+
+        const direccionSeleccionada = listaDirecciones.find(d => d.id === idDireccionSeleccionada);
+
+        $.ajax({
+            url: '<?= base_url("welcome/actualizarDireccionContrato") ?>',
+            type: 'POST',
+            data: { 
+                id_contratacion: datosContratacion.Id,
+                id_direccion: idDireccionSeleccionada 
+            },
+            success: function (response) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Se actualizo la dirección con éxito',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    location.reload();
+                });
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un error al actualizar la dirección.'
+                });
+            }
+        });
+    }
+
 </script>
 

@@ -413,10 +413,13 @@ class Principal extends CI_Model
     }
 
     public function obtener_contrataciones_por_pagar($id){
-        $sql = "SELECT c.monto, c.Id, c.hora_fin, c.hora_inicio, c.fecha_hora, d.titulo as lugar, s.titulo as servicio FROM contrataciones c
+        $sql = "SELECT c.monto, c.Id, c.hora_fin, c.hora_inicio, c.fecha_hora, d.titulo as lugar, s.titulo as servicio 
+                FROM contrataciones c
                 INNER JOIN usuarios_direcciones d ON d.Id = c.id_direccion
                 INNER JOIN servicios s ON s.Id = c.id_servicio
-                WHERE c.pagado = 'N' AND c.id_usuario = ?";
+                WHERE c.pagado = 'N' 
+                AND c.id_usuario = ? 
+                AND CAST(c.fecha_hora AS DATE) >= CAST(GETDATE() AS DATE)";
 
         $query = $this->db->query($sql, array($id));
         return $query->result_array();
@@ -439,7 +442,7 @@ class Principal extends CI_Model
     }
 
     public function obtener_contrataciones($id_contratacion){
-        $sql = "SELECT c.Id, s.titulo, u.nombre, c.fecha_hora, c.monto, c.hora_inicio, c.hora_fin from contrataciones c
+        $sql = "SELECT c.Id, c.id_servicio, c.id_direccion, s.titulo, u.nombre, c.fecha_hora, c.monto, c.hora_inicio, c.hora_fin from contrataciones c
                 inner join usuarios u on u.Id = c.id_usuario
                 inner join servicios s on s.Id = c.id_servicio
                 inner join usuarios_direcciones ud on ud.Id = c.id_direccion
@@ -447,6 +450,28 @@ class Principal extends CI_Model
 
         $query = $this->db->query($sql, array($id_contratacion));
         return $query->result_array();
+    }
+
+    public function cancelar_contratacion($id_contratacion){
+        $sql = "UPDATE contrataciones SET pagado = 'C' WHERE Id = ?";
+        return $this->db->query($sql, array($id_contratacion));
+    }
+
+    public function actualizarDireccionContrato($id_contratacion, $id_direccion) {
+        $sql = "UPDATE contrataciones 
+                SET id_direccion = ? 
+                WHERE Id = ?";
+        
+        return $this->db->query($sql, array($id_direccion, $id_contratacion));
+    }
+
+    public function agregar_comentario($id_usuario, $comentario, $id_servicio) {
+        $fecha_creacion = date('Y-m-d'); // formato: 2025-03-23
+
+        $sql = "INSERT INTO criticas (id_cliente, id_servicio, comentario, estatus, fecha_creacion) 
+                VALUES (?, ?, ?, 1, ?)";
+
+        return $this->db->query($sql, array($id_usuario, $id_servicio, $comentario, $fecha_creacion));
     }
 
 }

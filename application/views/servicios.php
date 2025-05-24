@@ -80,7 +80,15 @@
                     <li class="list-group-item">
                         <p><strong><?= LimpiaCadena($comentario['usuario_nombre'] . " " . $comentario['usuario_apellido']) ?>:</strong></p>
                         <p><?= nl2br(LimpiaCadena($comentario['comentario'])) ?></p>
-                        <p><strong>Calificación:</strong> <span class="badge bg-warning text-dark"> <?= LimpiaCadena($comentario['calificacion']) ?>/5</span></p>
+
+                        <?php if (!empty($comentario['calificacion'])): ?>
+                            <p><strong>Calificación:</strong> 
+                                <span class="badge bg-warning text-dark">
+                                    <?= LimpiaCadena($comentario['calificacion']) ?>/5
+                                </span>
+                            </p>
+                        <?php endif; ?>
+
                         <p class="text-muted"><small>Fecha: <?= LimpiaCadena($comentario['comentario_fecha_creacion']) ?></small></p>
                     </li>
                 <?php endforeach; ?>
@@ -88,6 +96,7 @@
         <?php else: ?>
             <div class="alert alert-info">No hay comentarios para este servicio.</div>
         <?php endif; ?>
+
     </div>
 </div>
 
@@ -120,13 +129,14 @@
         contratarD = false
     }
 
-    function agregarComentario(){
+    function agregarComentario() {
         const comentarioInput = document.getElementById('nuevo-comentario');
         const comentario = comentarioInput.value.trim();
 
         const usuarioId = document.getElementById('userId');
+        const id_servicio = document.getElementById('IdServicio').value;
 
-        if(usuarioId == null) {
+        if (!usuarioId || !usuarioId.value) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Aviso',
@@ -135,7 +145,7 @@
             return;
         }
 
-        if(comentario.trim === '') {
+        if (comentario === '') {
             Swal.fire({
                 icon: 'warning',
                 title: 'Aviso',
@@ -143,6 +153,41 @@
             });
             return;
         }
+
+        $.ajax({
+            url: '<?= base_url("welcome/agregar_comentario") ?>',
+            type: 'POST',
+            data: {
+                id_usuario: usuarioId.value,
+                comentario: comentario,
+                id_servicio: id_servicio
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status === 'success') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Aviso',
+                        text: 'Comentario agregado correctamente'
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Aviso',
+                        text: 'Error al agregar el comentario: ' + response.message
+                    });
+                }
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Aviso',
+                    text: 'Error en la solicitud: ' + error
+                });
+            }
+        });
     }
 
     function contratar(id_servicio){

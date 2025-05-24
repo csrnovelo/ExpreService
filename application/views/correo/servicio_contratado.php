@@ -36,7 +36,25 @@
         <div class="detalle">
             <p><strong>Servicio:</strong> <?= htmlspecialchars($servicio['id_servicio']) ?></p>
             <p><strong>Fecha y hora de inicio:</strong> <?= htmlspecialchars($servicio['fecha_hora']) ?></p>
-            <p><strong>Duración (horas):</strong> <?= $servicio['hora_fin'] - $servicio['hora_inicio'] + 1 ?></p>
+            <p><strong>Duración (horas):</strong>
+                <?php
+                    $inicio = $servicio['hora_inicio'];
+                    $fin = $servicio['hora_fin'];
+
+                    // Si ambos son numéricos (por ejemplo: 8 y 10)
+                    if (is_numeric($inicio) && is_numeric($fin)) {
+                        $duracion = $fin - $inicio + 1;
+                    } else {
+                        // Convertir a DateTime si son cadenas como '08:00:00'
+                        $horaInicio = new DateTime($inicio);
+                        $horaFin = new DateTime($fin);
+                        $horas = ($horaFin->format('H') - $horaInicio->format('H'));
+                        $duracion = $horas + 1;
+                    }
+
+                    echo $duracion;
+                ?>
+            </p>
             <p><strong>Total a pagar:</strong> $<?= number_format($servicio['monto'], 2) ?> MXN</p>
         </div>
 

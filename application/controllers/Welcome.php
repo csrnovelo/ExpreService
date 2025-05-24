@@ -41,7 +41,12 @@ class Welcome extends CI_Controller {
 
 	public function registrate()
 	{
+		$datos["secciones"]=$this->mP->consultar_secciones();
+		$datos["categorias"]=$this->mP->consultar_categorias();
+		$datos["servicios"]=$this->mP->consultar_servicios();
+	
 		$this->load->view('genericos/header');
+		$this->load->view('menu', $datos);
 		$this->load->view('registro');
 		$this->load->view('genericos/footer');
 	}
@@ -406,6 +411,58 @@ class Welcome extends CI_Controller {
 
 	}
 
+	public function actualizar_contrato(){
+		$id_usuario = $this->input->post('idUsuario');
+		$id_contratacion = $this->input->post('id_contratacion');
+		$correo = $this->input->post('correo_usuario');
+
+		$this->mP->pagar_servicios($id_contratacion);
+		
+		$datos_correo["usuario"] = $this->mP->mi_perfil($id_usuario);
+		$datos = $this->mP->obtener_contrataciones($id_contratacion);
+		$datos_correo["servicio"] = isset($datos[0]) ? $datos[0] : [];
+
+
+		$mensaje = $this->load->view('correo/servicio_contratado', $datos_correo, TRUE);
+
+		$config = array(
+			'protocol'    => 'smtp',
+			'smtp_host'   => 'smtp.gmail.com',
+			'smtp_port'   => 587,
+			'smtp_user'   => 'mttoservicexpress@gmail.com',
+			'smtp_pass'   => 'umag oqor evvz zkcx',
+			'smtp_crypto' => 'tls',
+			'mailtype'    => 'html',
+			'charset'     => 'utf-8',
+			'newline'     => "\r\n"
+		);
+	
+		$this->email->initialize($config);
+
+		$from_email = 'sistemas.icesureste@gmail.com';
+		if (empty($from_email)) {
+			log_message('error', 'La dirección "from" está vacía.');
+			return;
+		}
+
+		$this->email->from($from_email, 'ExpressService');
+		$this->email->to($correo);
+		$this->email->subject('Confirmación de contratación de servicio');
+		$this->email->message($mensaje);
+
+		if (!$this->email->send()) {
+			log_message('error', 'No se pudo enviar el correo: ' . $this->email->print_debugger());
+			echo json_encode([
+				'status'  => 'success',
+				'email'   => 'failed',
+				'message' => 'Servicio contratado, pero no se pudo enviar el correo de confirmación.'
+			]);
+			return;
+		}
+
+		echo json_encode(['status' => 'success', 'message' => 'Servicio contratado y correo enviado.']);
+	}
+
 	public function contratar_servicio_despues(){
 		$id_usuario = $this->input->post('id_usuario');
 		$id_servicio = $this->input->post('id_servicio');
@@ -526,5 +583,58 @@ class Welcome extends CI_Controller {
 			->set_output(json_encode(['mensaje' => 'Contrataciones marcadas como pagadas y correo enviado.']));
 	}
 
+	public function cancelar_contratacion(){
+		$id_contratacion = $this->input->post('id_contratacion');
+
+		$this->load->model('Principal');
+		$resultado = $this->mP->cancelar_contratacion($id_contratacion);
+	
+		if ($resultado) {
+			echo json_encode(['status' => 'success']);
+		} else {
+			echo json_encode(['status' => 'error', 'message' => 'No se pudo cancelar el servicio.']);
+		}
+	}
+
+	public function obtenerContratacionDirecciones(){
+		$id_contratacion = $this->input->get('id_contratacion');
+		$id_usuario = $this->input->get('id_usuario');
+
+		$datos["contratacion"] = $this->mP->obtener_contrataciones($id_contratacion);
+		$datos["direcciones"] = $this->mP->obtener_direcciones($id_usuario);
+
+		echo json_encode($datos);
+	}
+
+	public function actualizarDireccionContrato(){
+		$id_contratacion = $this->input->post('id_contratacion');
+		$id_direccion = $this->input->post('id_direccion');
+
+
+		$this->load->model('Principal');
+		$resultado = $this->mP->actualizarDireccionContrato($id_contratacion, $id_direccion);
+	
+		if ($resultado) {
+			echo json_encode(['status' => 'success']);
+		} else {
+			echo json_encode(['status' => 'error', 'message' => 'No se pudo actualizar el contrato.']);
+		}
+	}
+
+	public function agregar_comentario(){
+		$id_usuario = $this->input->post('id_usuario');
+		$comentario = $this->input->post('comentario');
+		$id_servicio = $this->input->post('id_servicio');
+
+
+		$this->load->model('Principal');
+		$resultado = $this->mP->agregar_comentario($id_usuario, $comentario, $id_servicio);
+	
+		if ($resultado) {
+			echo json_encode(['status' => 'success']);
+		} else {
+			echo json_encode(['status' => 'error', 'message' => 'No se pudo actualizar el contrato.']);
+		}
+	}
 
 }
